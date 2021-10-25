@@ -33,16 +33,13 @@ export default {
   methods: {
     initCells() {
 
-      //const minimum = 0
-      //const maximum = 15
-
       this.cells = Array(16).fill(0)
-      //let startPos = Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
-      this.cells[5] = 2
-      this.cells[7] = 2
-      //startPos = Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
-      this.cells[12] = 2
-      this.cells[9] = 2
+      this.randomCell()
+      this.randomCell()
+      //this.cells[5] = 2
+      //this.cells[7] = 2
+      //this.cells[12] = 2
+      //this.cells[9] = 2
 
 
     },
@@ -60,6 +57,72 @@ export default {
       } else if (event.code === "ArrowDown") {
         this.moveDown()
       }
+
+
+      this.randomCell()
+
+    },
+    chunkArray(arr, cnt) { return  arr.reduce((prev, cur, i, a) => !(i % cnt) ? prev.concat([a.slice(i, i + cnt)]) : prev, [])},
+    rowToCell(tempCells) {
+      const newCells = JSON.parse(JSON.stringify(tempCells))
+
+      for(let i = 0; i < tempCells.length; i++) {
+        for(let j = 0; j < tempCells[i].length; j++) {
+          newCells[j][i] = tempCells[i][j];
+        }
+      }
+
+      return newCells
+    },
+    combaineCellsLeft(tempCells) {
+
+      tempCells.forEach(row => {
+        for (let i = 3; i >= 0; i--) {
+          if (row[i] === row[i-1] && row[i] !== 0) {
+            row[i-1] = row[i] * 2
+            row[i] = 0
+          }
+        }
+      })
+
+
+      return tempCells
+    },
+    combaineCellsRight(tempCells) {
+
+      tempCells.forEach(row => {
+        for (let i = 0; i < 4; i++) {
+          if (row[i] === row[i+1] && row[i] !== 0) {
+            row[i+1] = row[i] * 2
+            row[i] = 0
+          }
+        }
+      })
+
+
+      return tempCells
+    },
+    randomCell() {
+      let rndPos
+
+      const emptyCells = this.cells.reduce((arr, value, currIndex) => {
+
+        if (value === 0) {
+          arr.push(currIndex)
+        }
+
+        return arr
+
+      }, [])
+
+      if (emptyCells.length === 0) {
+        console.log("YOU ARE LOSE")
+      }
+
+      rndPos = Math.floor(Math.random() * emptyCells.length)
+      console.log("rndElement", rndPos, emptyCells[rndPos])
+      this.cells[emptyCells[rndPos]] = 2
+
     },
     moveLeft() {
 
@@ -86,19 +149,8 @@ export default {
       })
 
       // Возвращение к одномерному массиву и сохранение данных
-      this.cells = tempCells.flat()
-    },
-    chunkArray(arr, cnt) { return  arr.reduce((prev, cur, i, a) => !(i % cnt) ? prev.concat([a.slice(i, i + cnt)]) : prev, [])},
-    rowToCell(tempCells) {
-      const newCells = JSON.parse(JSON.stringify(tempCells))
+      this.cells = this.combaineCellsLeft(tempCells).flat()
 
-      for(let i = 0; i < tempCells.length; i++) {
-        for(let j = 0; j < tempCells[i].length; j++) {
-          newCells[j][i] = tempCells[i][j];
-        }
-      }
-
-      return newCells
     },
     moveRight() {
 
@@ -125,7 +177,7 @@ export default {
       })
 
       // Возвращение к одномерному массиву и сохранение данных
-      this.cells = tempCells.flat()
+      this.cells = this.combaineCellsRight(tempCells).flat()
     },
   moveTop() {
     // Создание двумерного массива с одномерного
@@ -152,7 +204,8 @@ export default {
       }
     })
 
-    tempCells = this.rowToCell(newCells)
+    const test = this.combaineCellsLeft(newCells)
+    tempCells = this.rowToCell(test)
 
     // Возвращение к одномерному массиву и сохранение данных
     this.cells = tempCells.flat()
@@ -184,7 +237,7 @@ export default {
       }
     })
 
-    tempCells = this.rowToCell(newCells)
+    tempCells = this.rowToCell(this.combaineCellsRight(newCells))
 
     // Возвращение к одномерному массиву и сохранение данных
     this.cells = tempCells.flat()
