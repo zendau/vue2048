@@ -1,4 +1,5 @@
 <template>
+  <h1>Your score - {{globalScore}}</h1>
   <div class="board">
     <Cell v-for="(item, index) in cells" :key="index" :cellData="item"/>
   </div>
@@ -20,12 +21,12 @@ import Cell from '@/components/Cell.vue'
 export default {
   data() {
     return {
-      cells: []
+      cells: [],
+      globalScore: 0
     }
   },
   mounted() {
     this.initCells()
-    console.log(this.cells)
 
     window.addEventListener('keydown', this.cellsMove);
 
@@ -36,11 +37,6 @@ export default {
       this.cells = Array(16).fill(0)
       this.randomCell()
       this.randomCell()
-      //this.cells[5] = 2
-      //this.cells[7] = 2
-      //this.cells[12] = 2
-      //this.cells[9] = 2
-
 
     },
     cellsMove(event) {
@@ -58,8 +54,8 @@ export default {
         this.moveDown()
       }
 
-
       this.randomCell()
+
 
     },
     chunkArray(arr, cnt) { return  arr.reduce((prev, cur, i, a) => !(i % cnt) ? prev.concat([a.slice(i, i + cnt)]) : prev, [])},
@@ -79,7 +75,9 @@ export default {
       tempCells.forEach(row => {
         for (let i = 3; i >= 0; i--) {
           if (row[i] === row[i-1] && row[i] !== 0) {
+            // добавить row[i] * 2 в глобальную сумму
             row[i-1] = row[i] * 2
+            this.globalScore += row[i] * 2
             row[i] = 0
           }
         }
