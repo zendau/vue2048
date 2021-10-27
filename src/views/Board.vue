@@ -22,7 +22,9 @@ export default {
   data() {
     return {
       cells: [],
-      globalScore: 0
+      globalScore: 0,
+      lockHorizontal: false,
+      lockVertical: false
     }
   },
   mounted() {
@@ -75,9 +77,10 @@ export default {
       tempCells.forEach(row => {
         for (let i = 3; i >= 0; i--) {
           if (row[i] === row[i-1] && row[i] !== 0) {
-            // добавить row[i] * 2 в глобальную сумму
             row[i-1] = row[i] * 2
             this.globalScore += row[i] * 2
+            this.lockHorizontal = false
+            this.lockVertical = false
             row[i] = 0
           }
         }
@@ -92,6 +95,9 @@ export default {
         for (let i = 0; i < 4; i++) {
           if (row[i] === row[i+1] && row[i] !== 0) {
             row[i+1] = row[i] * 2
+            this.globalScore += row[i] * 2
+            this.lockHorizontal = false
+            this.lockVertical = false
             row[i] = 0
           }
         }
@@ -114,18 +120,21 @@ export default {
       }, [])
 
       if (emptyCells.length === 0) {
-        console.log("YOU ARE LOSE")
+
+        if (this.lockHorizontal && this.lockVertical) {
+          alert("YOU ARE LOSE")
+        }
+
+      } else {
+        rndPos = Math.floor(Math.random() * emptyCells.length)
+        console.log("rndElement", rndPos, emptyCells[rndPos])
+        this.cells[emptyCells[rndPos]] = 2
       }
-
-      rndPos = Math.floor(Math.random() * emptyCells.length)
-      console.log("rndElement", rndPos, emptyCells[rndPos])
-      this.cells[emptyCells[rndPos]] = 2
-
     },
     moveLeft() {
 
       // Создание двумерного массива с одномерного
-      const tempCells = this.chunkArray(this.cells, 4)
+      let tempCells = this.chunkArray(this.cells, 4)
 
       // Перебор двумерного массива
       tempCells.map((row,rowIndex) => {
@@ -146,14 +155,17 @@ export default {
         }
       })
 
+      tempCells = this.combaineCellsLeft(tempCells).flat()
+      this.lockHorizontal = this.cells.join() === tempCells.join()
+
       // Возвращение к одномерному массиву и сохранение данных
-      this.cells = this.combaineCellsLeft(tempCells).flat()
+      this.cells = tempCells
 
     },
     moveRight() {
 
       // Создание двумерного массива с одномерного
-      const tempCells = this.chunkArray(this.cells, 4)
+      let tempCells = this.chunkArray(this.cells, 4)
 
       // Перебор двумерного массива
       tempCells.map((row,rowIndex) => {
@@ -174,8 +186,11 @@ export default {
         }
       })
 
+      tempCells = this.combaineCellsRight(tempCells).flat()
+      this.lockHorizontal = this.cells.join() === tempCells.join()
+
       // Возвращение к одномерному массиву и сохранение данных
-      this.cells = this.combaineCellsRight(tempCells).flat()
+      this.cells = tempCells
     },
   moveTop() {
     // Создание двумерного массива с одномерного
@@ -203,14 +218,15 @@ export default {
     })
 
     const test = this.combaineCellsLeft(newCells)
-    tempCells = this.rowToCell(test)
+    tempCells = this.rowToCell(test).flat()
 
+    this.lockVertical = this.cells.join() === tempCells.join()
     // Возвращение к одномерному массиву и сохранение данных
-    this.cells = tempCells.flat()
+    this.cells = tempCells
   },
   moveDown() {
 
-      console.log("click")
+    console.log("click")
     // Создание двумерного массива с одномерного
     let tempCells = this.chunkArray(this.cells, 4)
 
@@ -235,10 +251,12 @@ export default {
       }
     })
 
-    tempCells = this.rowToCell(this.combaineCellsRight(newCells))
+    tempCells = this.rowToCell(this.combaineCellsRight(newCells)).flat()
+
+    this.lockVertical = this.cells.join() === tempCells.join()
 
     // Возвращение к одномерному массиву и сохранение данных
-    this.cells = tempCells.flat()
+    this.cells = tempCells
   }
   },
   name: 'Board',

@@ -1,6 +1,6 @@
 <template>
   <div class="cell">
-   <p v-bind:class="[cellData === 0 ? 'cell-data' : 'cell-data--active']">{{cellData}}</p>
+   <p v-bind:class="[cellData === 0 ? 'cell-data' : 'cell-data--active']">{{cellNumber}}</p>
   </div>
 </template>
 
@@ -9,6 +9,11 @@ export default {
   name: 'HelloWorld',
   props: {
     cellData: Number
+  },
+  computed: {
+    cellNumber() {
+      return this.cellData !== 0 ? this.cellData : ""
+    }
   }
 }
 </script>
