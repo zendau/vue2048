@@ -3,6 +3,8 @@
   <div class="board">
     <Cell v-for="(item, index) in cells" :key="index" :cellData="item"/>
   </div>
+  <EndGame v-if="endGame" @resetGame="resetGame" />
+
 </template>
 
 <style scoped lang="scss">
@@ -17,6 +19,7 @@
 <script>
 // @ is an alias to /src
 import Cell from '@/components/Cell.vue'
+import EndGame from "../components/EndGame";
 
 export default {
   data() {
@@ -24,7 +27,8 @@ export default {
       cells: [],
       globalScore: 0,
       lockHorizontal: false,
-      lockVertical: false
+      lockVertical: false,
+      endGame: false
     }
   },
   mounted() {
@@ -40,6 +44,11 @@ export default {
       this.randomCell()
       this.randomCell()
 
+      this.lockVertical = false
+      this.lockHorizontal = false
+      this.globalScore = 0
+      this.endGame = false
+
     },
     cellsMove(event) {
       event.preventDefault()
@@ -48,16 +57,17 @@ export default {
 
       if (event.code === "ArrowLeft") {
         this.moveLeft()
+        this.randomCell()
       } else if (event.code === "ArrowRight") {
         this.moveRight()
+        this.randomCell()
       } else if (event.code === "ArrowUp") {
         this.moveTop()
+        this.randomCell()
       } else if (event.code === "ArrowDown") {
         this.moveDown()
+        this.randomCell()
       }
-
-      this.randomCell()
-
 
     },
     chunkArray(arr, cnt) { return  arr.reduce((prev, cur, i, a) => !(i % cnt) ? prev.concat([a.slice(i, i + cnt)]) : prev, [])},
@@ -122,7 +132,7 @@ export default {
       if (emptyCells.length === 0) {
 
         if (this.lockHorizontal && this.lockVertical) {
-          alert("YOU ARE LOSE")
+          this.endGame = true
         }
 
       } else {
@@ -257,11 +267,14 @@ export default {
 
     // Возвращение к одномерному массиву и сохранение данных
     this.cells = tempCells
+  },
+  resetGame() {
+    this.initCells()
   }
   },
   name: 'Board',
   components: {
-    Cell
+    Cell, EndGame
   }
 }
 </script>

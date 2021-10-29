@@ -1,5 +1,11 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <EndGame />
   </div>
 </template>
+<script>
+import EndGame from "../components/EndGame";
+export default {
+  components: {EndGame}
+}
+</script>
