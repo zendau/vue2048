@@ -12,12 +12,14 @@ const PORT = process.env.PORT || 3000
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-app.use("/top", playerRoute)
-
 app.use(cors({
     credentials: true,
     origin: process.env.CLIENT_URL
 }))
+
+
+app.use("/top", playerRoute)
+
 
 
 

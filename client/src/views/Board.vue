@@ -5,7 +5,7 @@
     <Cell v-for="(item, index) in cells" :key="index" :cellData="item"/>
   </div>
   <EndGame v-if="endGame" @resetGame="resetGame" />
-
+  <mobile-area @btnEvent="clickMoveBtn" />
 </template>
 
 <style scoped lang="scss">
@@ -21,6 +21,8 @@
 // @ is an alias to /src
 import Cell from '@/components/Cell.vue'
 import EndGame from "../components/EndGame";
+import MobileArea from "../components/mobileArea";
+import $api from "../axios";
 
 export default {
   data() {
@@ -30,15 +32,21 @@ export default {
       bestScore: 0,
       lockHorizontal: false,
       lockVertical: false,
-      endGame: false
+      endGame: false,
+      username: ""
     }
   },
   mounted() {
+
+    this.username = this.$route.params.username
+    console.log(this.username)
+
     this.initCells()
-
-
     window.addEventListener('keydown', this.cellsMove);
 
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.cellsMove);
   },
   methods: {
     initCells() {
@@ -55,10 +63,24 @@ export default {
       this.endGame = false
 
     },
+    clickMoveBtn(title) {
+      if (title === "left") {
+        this.moveLeft()
+        this.randomCell()
+      } else if (title === "right") {
+        this.moveRight()
+        this.randomCell()
+      } else if (title === "top") {
+        this.moveTop()
+        this.randomCell()
+      } else if (title === "down") {
+        this.moveDown()
+        this.randomCell()
+      }
+    },
     cellsMove(event) {
-      event.preventDefault()
 
-      console.log(event)
+      event.preventDefault()
 
       if (event.code === "ArrowLeft") {
         this.moveLeft()
@@ -73,6 +95,8 @@ export default {
         this.moveDown()
         this.randomCell()
       }
+
+      event.stopPropagation()
 
     },
     chunkArray(arr, cnt) { return  arr.reduce((prev, cur, i, a) => !(i % cnt) ? prev.concat([a.slice(i, i + cnt)]) : prev, [])},
@@ -138,6 +162,15 @@ export default {
 
         if (this.lockHorizontal && this.lockVertical) {
           this.endGame = true
+
+          const data = {
+            username: this.username,
+            score: this.globalScore
+          }
+
+          console.log("data", data)
+
+          $api.post("/top/addPlayer", data).then( res => console.log(res))
           this.setBestScore()
         }
 
@@ -148,7 +181,10 @@ export default {
       }
     },
     setBestScore() {
-      localStorage.setItem("score", this.globalScore)
+
+      if (this.globalScore > this.bestScore) {
+        localStorage.setItem("score", this.globalScore)
+      }
     },
     getBestScore() {
       this.bestScore = localStorage.getItem("score")
@@ -287,6 +323,7 @@ export default {
   },
   name: 'Board',
   components: {
+    MobileArea,
     Cell, EndGame
   }
 }

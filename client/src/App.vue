@@ -1,6 +1,7 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
+    <router-link to="/">New game</router-link> |
+    <router-link to="/board">Board</router-link> |
     <router-link to="/top">Top list</router-link>
   </div>
   <router-view/>
