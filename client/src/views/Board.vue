@@ -1,8 +1,8 @@
 <template>
-  <h1>Your score - {{globalScore}}</h1>
-  <h2>Best score - {{bestScore}}</h2>
+  <h1>Your score - {{ globalScore }}</h1>
+  <h2>Best score - {{ bestScore }}</h2>
   <div class="board">
-    <Cell v-for="(item, index) in cells" :key="index" :cellData="item"/>
+    <Cell v-for="(item, index) in cells" :key="index" :cellData="item" />
   </div>
   <EndGame v-if="endGame" @resetGame="resetGame" />
   <mobile-area @btnEvent="clickMoveBtn" />
@@ -33,7 +33,13 @@ export default {
       lockHorizontal: false,
       lockVertical: false,
       endGame: false,
-      username: ""
+      username: "",
+      colors: {},
+    }
+  },
+  provide() {
+    return {
+      colors: this.colors
     }
   },
   mounted() {
@@ -49,12 +55,27 @@ export default {
     window.removeEventListener('keydown', this.cellsMove);
   },
   methods: {
+    setColor(cell) {
+
+      this.r = Math.floor(Math.random() * 255);
+      this.g = Math.floor(Math.random() * 255);
+      this.b = Math.floor(Math.random() * 255);
+
+
+      let color = this.colors[cell]
+      if (color === undefined) {
+        color = 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',0.8)';
+        this.colors[cell] = color
+      }
+      return color
+    },
     initCells() {
 
       this.cells = Array(16).fill(0)
       this.randomCell()
       this.randomCell()
 
+      this.colors[2] = '#eee4da';
       this.getBestScore()
 
       this.lockVertical = false
@@ -99,12 +120,12 @@ export default {
       event.stopPropagation()
 
     },
-    chunkArray(arr, cnt) { return  arr.reduce((prev, cur, i, a) => !(i % cnt) ? prev.concat([a.slice(i, i + cnt)]) : prev, [])},
+    chunkArray(arr, cnt) { return arr.reduce((prev, cur, i, a) => !(i % cnt) ? prev.concat([a.slice(i, i + cnt)]) : prev, []) },
     rowToCell(tempCells) {
       const newCells = JSON.parse(JSON.stringify(tempCells))
 
-      for(let i = 0; i < tempCells.length; i++) {
-        for(let j = 0; j < tempCells[i].length; j++) {
+      for (let i = 0; i < tempCells.length; i++) {
+        for (let j = 0; j < tempCells[i].length; j++) {
           newCells[j][i] = tempCells[i][j];
         }
       }
@@ -115,8 +136,9 @@ export default {
 
       tempCells.forEach(row => {
         for (let i = 3; i >= 0; i--) {
-          if (row[i] === row[i-1] && row[i] !== 0) {
-            row[i-1] = row[i] * 2
+          if (row[i] === row[i - 1] && row[i] !== 0) {
+            row[i - 1] = row[i] * 2
+            this.setColor(row[i - 1])
             this.globalScore += row[i] * 2
             this.lockHorizontal = false
             this.lockVertical = false
@@ -132,8 +154,9 @@ export default {
 
       tempCells.forEach(row => {
         for (let i = 0; i < 4; i++) {
-          if (row[i] === row[i+1] && row[i] !== 0) {
-            row[i+1] = row[i] * 2
+          if (row[i] === row[i + 1] && row[i] !== 0) {
+            row[i + 1] = row[i] * 2
+            this.setColor(row[i + 1])
             this.globalScore += row[i] * 2
             this.lockHorizontal = false
             this.lockVertical = false
@@ -170,7 +193,7 @@ export default {
 
           console.log("data", data)
 
-          $api.post("/top/addPlayer", data).then( res => console.log(res))
+          $api.post("/top/addPlayer", data).then(res => console.log(res))
           this.setBestScore()
         }
 
@@ -196,19 +219,19 @@ export default {
       let tempCells = this.chunkArray(this.cells, 4)
 
       // Перебор двумерного массива
-      tempCells.map((row,rowIndex) => {
+      tempCells.map((row, rowIndex) => {
         // Перебор одномерного массива который соответствует строке
         for (let i = 0; i < 4; i++) {
           // Если в первой ячейке уже если чисто, то пропустить её
           if (row[i] !== 0 && i !== 0) {
             // Выполнитель действие если предыдущая ячейка равна нулю и можно произвести сдвиг
-            if (row[i-1] === 0) {
+            if (row[i - 1] === 0) {
               // Замена элемента который стоит впереди смещаемого элемента на смещаемый элемент
-              tempCells[rowIndex][i-1] = tempCells[rowIndex][i]
+              tempCells[rowIndex][i - 1] = tempCells[rowIndex][i]
               // Замена предыдущего элемента который остался после двига на 0
               tempCells[rowIndex][i] = 0
               // Возврат для проверки на пустое простанство после сдвигов
-              i-=2
+              i -= 2
             }
           }
         }
@@ -227,19 +250,19 @@ export default {
       let tempCells = this.chunkArray(this.cells, 4)
 
       // Перебор двумерного массива
-      tempCells.map((row,rowIndex) => {
+      tempCells.map((row, rowIndex) => {
         // Перебор одномерного массива который соответствует строке
         for (let i = 3; i >= 0; i--) {
           // Если в первой ячейке уже если чисто, то пропустить её
           if (row[i] !== 0 && i !== 4) {
             // Выполнитель действие если предыдущая ячейка равна нулю и можно произвести сдвиг
-            if (row[i+1] === 0) {
+            if (row[i + 1] === 0) {
               // Замена элемента который стоит впереди смещаемого элемента на смещаемый элемент
-              tempCells[rowIndex][i+1] = tempCells[rowIndex][i]
+              tempCells[rowIndex][i + 1] = tempCells[rowIndex][i]
               // Замена предыдущего элемента который остался после двига на 0
               tempCells[rowIndex][i] = 0
               // Возврат для проверки на пустое простанство после сдвигов
-              i+=2
+              i += 2
             }
           }
         }
@@ -258,19 +281,19 @@ export default {
       let newCells = this.rowToCell(tempCells)
 
       // Перебор двумерного массива
-      newCells.map((row,rowIndex) => {
+      newCells.map((row, rowIndex) => {
         // Перебор одномерного массива который соответствует строке
         for (let i = 0; i < 4; i++) {
           // Если в первой ячейке уже если чисто, то пропустить её
           if (row[i] !== 0 && i !== 0) {
             // Выполнитель действие если предыдущая ячейка равна нулю и можно произвести сдвиг
-            if (row[i-1] === 0) {
+            if (row[i - 1] === 0) {
               // Замена элемента который стоит впереди смещаемого элемента на смещаемый элемент
-              newCells[rowIndex][i-1] = newCells[rowIndex][i]
+              newCells[rowIndex][i - 1] = newCells[rowIndex][i]
               // Замена предыдущего элемента который остался после двига на 0
               newCells[rowIndex][i] = 0
               // Возврат для проверки на пустое простанство после сдвигов
-              i-=2
+              i -= 2
             }
           }
         }
@@ -285,26 +308,25 @@ export default {
     },
     moveDown() {
 
-      console.log("click")
       // Создание двумерного массива с одномерного
       let tempCells = this.chunkArray(this.cells, 4)
 
       let newCells = this.rowToCell(tempCells)
 
       // Перебор двумерного массива
-      newCells.map((row,rowIndex) => {
+      newCells.map((row, rowIndex) => {
         // Перебор одномерного массива который соответствует строке
         for (let i = 3; i >= 0; i--) {
           // Если в первой ячейке уже если чисто, то пропустить её
           if (row[i] !== 0 && i !== 4) {
             // Выполнитель действие если предыдущая ячейка равна нулю и можно произвести сдвиг
-            if (row[i+1] === 0) {
+            if (row[i + 1] === 0) {
               // Замена элемента который стоит впереди смещаемого элемента на смещаемый элемент
-              newCells[rowIndex][i+1] = newCells[rowIndex][i]
+              newCells[rowIndex][i + 1] = newCells[rowIndex][i]
               // Замена предыдущего элемента который остался после двига на 0
               newCells[rowIndex][i] = 0
               // Возврат для проверки на пустое простанство после сдвигов
-              i+=2
+              i += 2
             }
           }
         }

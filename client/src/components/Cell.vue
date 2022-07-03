@@ -1,14 +1,26 @@
 <template>
   <div class="cell">
-   <p v-bind:class="[cellData === 0 ? 'cell-data' : 'cell-data--active']">{{cellNumber}}</p>
+    <p ref="cell" v-bind:class="[cellData === 0 ? 'cell-data' : 'cell-data--active']">
+      {{ cellNumber }}
+    </p>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
+  inject: ['colors'],
   props: {
     cellData: Number
+  },
+  updated() {
+    // eslint-disable-next-line no-debugger
+    debugger
+    if (this.cellData !== 0) {
+      this.$refs.cell.style.backgroundColor = this.colors[this.cellData]
+    } else {
+      this.$refs.cell.style.backgroundColor = 'rgba(238, 228, 218, 0.35)'
+    }
+
   },
   computed: {
     cellNumber() {
@@ -28,13 +40,15 @@ export default {
 }
 
 .cell-data {
-  background-color: rgba(238, 228, 218, 0.35);;
+  background-color: rgba(238, 228, 218, 0.35);
+  ;
   width: 100%;
   height: 100%;
   margin: 0;
   font-size: 24px;
   text-align: center;
   line-height: 98px;
+
   &--active {
     width: 100%;
     height: 100%;
@@ -46,5 +60,4 @@ export default {
   }
 
 }
-
 </style>
