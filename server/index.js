@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 
 const express = require("express")
 const app = express()
@@ -29,6 +29,7 @@ async function start() {
         await mongoose.connect(process.env.DB_URL, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            directConnection: true
         }).then(() => console.log("Connected to MongoDB server"))
             .catch((error) => console.log(error));
 

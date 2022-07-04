@@ -46,6 +46,11 @@ export default {
   margin: 10px auto;
 }
 
+p {
+  text-align: center;
+  margin-top: 20px;
+}
+
 @media (max-width: 720px) {
   .table {
     width: 100%!important;
