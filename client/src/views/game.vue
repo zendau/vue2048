@@ -177,7 +177,7 @@ export default {
 
       if (emptyCells.length === 0) {
 
-        if (this.lockHorizontal && this.lockVertical) {
+        if (this.lockHorizontal && this.lockVertical && !this.endGame) {
          this.losedGame()
         }
 
@@ -194,6 +194,8 @@ export default {
     },
     getBestScore() {
       this.bestScore = localStorage.getItem("score")
+      console.log(this.bestScore)
+      if (this.bestScore === null) this.bestScore = 0
 
     },
     moveLeft() {

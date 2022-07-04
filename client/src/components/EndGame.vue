@@ -12,10 +12,6 @@
 export default {
   name: "EndGame",
   emits: ["resetGame"],
-  beforeMount() {
-    var audio = new Audio('dark-souls-death.mp3');
-    audio.play();
-  },
   methods: {
     resetClick() {
       this.$emit("resetGame")
