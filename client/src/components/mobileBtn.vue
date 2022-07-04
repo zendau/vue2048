@@ -1,5 +1,5 @@
 <template>
-  <button><span class="material-icons">{{getBtnData}}</span></button>
+  <button class="btn btn-primary"><span class="material-icons">{{ getBtnData }}</span></button>
 </template>
 
 <script>
@@ -33,8 +33,15 @@ export default {
 </script>
 
 <style scoped>
+button {
+  display: none;
+  width: 50px;
+  height: 50px;
+}
+
+@media (max-width: 720px) {
   button {
-    width: 50px;
-    height: 50px;
+    display: block;
   }
+}
 </style>

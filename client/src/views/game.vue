@@ -1,6 +1,6 @@
 <template>
-  <h1>Your score - {{ globalScore }}</h1>
-  <h2>Best score - {{ bestScore }}</h2>
+  <h1 class="score">Score - {{ globalScore }}</h1>
+  <h2 class="score">Best score - {{ bestScore }}</h2>
   <div class="board">
     <Cell v-for="(item, index) in cells" :key="index" :cellData="item" />
   </div>
@@ -8,19 +8,10 @@
   <mobile-area @btnEvent="clickMoveBtn" />
 </template>
 
-<style scoped lang="scss">
-.board {
-  margin: 0 auto;
-  width: 400px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-</style>
-
 <script>
 // @ is an alias to /src
 import Cell from '@/components/Cell.vue'
-import EndGame from "../components/EndGame";
+import EndGame from "../components/EndGame.vue";
 import MobileArea from "../components/mobileArea";
 import $api from "../axios";
 
@@ -44,8 +35,11 @@ export default {
   },
   mounted() {
 
-    this.username = this.$route.params.username
-    console.log(this.username)
+    this.username = this.$route.params.userName
+
+    if (this.username === undefined) {
+      this.$router.push('/')
+    }
 
     this.initCells()
     window.addEventListener('keydown', this.cellsMove);
@@ -184,22 +178,11 @@ export default {
       if (emptyCells.length === 0) {
 
         if (this.lockHorizontal && this.lockVertical) {
-          this.endGame = true
-
-          const data = {
-            username: this.username,
-            score: this.globalScore
-          }
-
-          console.log("data", data)
-
-          $api.post("/top/addPlayer", data).then(res => console.log(res))
-          this.setBestScore()
+         this.losedGame()
         }
 
       } else {
         rndPos = Math.floor(Math.random() * emptyCells.length)
-        console.log("rndElement", rndPos, emptyCells[rndPos])
         this.cells[emptyCells[rndPos]] = 2
       }
     },
@@ -341,7 +324,19 @@ export default {
     },
     resetGame() {
       this.initCells()
+    },
+    losedGame() {
+      this.endGame = true
+
+      const data = {
+        username: this.username,
+        score: this.globalScore
+      }
+
+      $api.post("/top/addPlayer", data).then(res => console.log(res))
+      this.setBestScore()
     }
+
   },
   name: 'Board',
   components: {
@@ -351,3 +346,31 @@ export default {
 }
 </script>
 
+<style scoped lang="scss">
+.board {
+  margin: 0 auto;
+  width: 400px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.score {
+  text-align: center;
+  margin: 10px 0;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+
+@media (max-width: 720px) {
+  .board {
+    width: 300px;
+  }    
+}
+
+</style>

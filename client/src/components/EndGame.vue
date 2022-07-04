@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="overlay"></div>
-    <div class="container">
+    <div class="end-container">
       <h1>Game over</h1>
       <button @click="resetClick">Try again</button>
     </div>
@@ -35,20 +35,17 @@ export default {
   opacity: .3;
 }
 
-.container {
+.end-container {
 
   position: absolute;
   top: 40%;
   left: 50%;
   transform: translate(-50%, -40%);
-
-
-
   z-index: 200;
   height: 160px;
-  background-color: black;
-  width: 100%;
-  box-shadow: 0 0 5px 10px black;
+  background-color: #F7D3BA;
+  width: 500px;
+  box-shadow: 0 0 5px 10px #F7D3BA;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,7 +53,7 @@ export default {
 }
 
 h1 {
-  color: #ab1313;
+  color: #F73859;
   z-index: 100;
   font-size: 40px;
 }
@@ -65,17 +62,15 @@ button {
   border: none;
   border-radius: 6px;
   width: 150px;
-  height: 40px;
   font-size: 28px;
   cursor: pointer;
   margin: 15px 0;
-  background-color: #8E0505;
+  background-color: #347474;
   color: #fff;
-  padding: 5px;
   transition: .5s;
 
   &:hover {
-    background-color: #E02401;
+    background-color: #63B7AF;
   }
 
 }

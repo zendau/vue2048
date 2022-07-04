@@ -60,4 +60,11 @@ export default {
   }
 
 }
+
+@media (max-width: 720px) {
+  .cell {
+    width: 75px;
+    height: 75px;
+  }
+}
 </style>

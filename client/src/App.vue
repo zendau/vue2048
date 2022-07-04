@@ -1,36 +1,41 @@
 <template>
-  <div id="nav">
-    <router-link to="/">New game</router-link> |
-    <router-link to="/board">Board</router-link> |
-    <router-link to="/top">Top list</router-link>
-  </div>
+  <Navbar/>
+  <!-- <div id="nav">
+   
+  </div> -->
   <router-view/>
 </template>
 
+<script>
+import Navbar from './components/navbar.vue'
+  export default {
+    data() {
+        return {
+            userName: null
+        };
+    },
+    provide() {
+        return {
+            update: this.update
+        };
+    },
+    methods: {
+        update(value) {
+            console.log("value", value);
+            this.userName = value;
+        },
+        onClick() {
+            console.log("test");
+            this.$router.push("/");
+        }
+    },
+    components: { Navbar }
+}
+</script>
+
 <style lang="scss">
-
-body {
-  margin: 0;
-}
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  body {
+    background-color: #F6F6F6!important;
   }
-}
+
 </style>

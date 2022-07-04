@@ -1,29 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Board from '../views/Board.vue'
-import TopList from "../views/TopList";
-import StartGame from "../views/startGame"
+import topList from "../views/TopList";
+import startGame from "../views/startGame.vue"
+import game from "../views/game.vue"
 
 const routes = [
   {
     path: '/',
-    name: 'StartGame',
-    component: StartGame
+    name: 'startGame',
+    component: startGame
   },
   {
-    path: '/board',
-    name: 'Board',
-    component: Board
+    path: '/game',
+    name: 'game',
+    component: game
   },
   {
     path: '/top',
     name: 'TopList',
-    component: TopList
+    component: topList
   },
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes,
+  linkActiveClass: "active",
 })
 
 export default router
